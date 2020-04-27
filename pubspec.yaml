@@ -1,30 +1,47 @@
 name: community_parade
 description: A community parade project
-
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' 
 
 version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
+analyzer:
+  exclude: [lib/generated/**]
+
 dependencies:
   flutter:
     sdk: flutter
-  firebase_database:
-    git:
-      url: https://github.com/jpeiffer/flutterfire
-      path: packages/firebase_database
-      ref: 2d336caeb9ea65fcaaf83035e1653415f7017ae6
+  encrypt: ^4.0.0
+  firebase_auth: ^0.16.0
+  firebase_core: ^0.4.4+3
+  firebase_database: ^3.1.3 
   flutter_map: ^0.9.0
+  flutter_qr_bar_scanner: ^1.0.1
+  flutter_secure_storage: ^3.3.3
+  geolocator: ^5.3.1
+  logging: ^0.11.4
+  pointycastle: ^1.0.1
   provider: ^4.0.5
   rest_client: any
+  sqflite: ^1.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path_android: "assets-src/icon_transparent.png"
+  image_path: "assets-src/icon_white.png"
+
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/config/
+    - assets/images/
+    - assets/secure/

@@ -1,3 +1,6 @@
+analyzer:
+  exclude: [lib/generated/**]
+  
 linter:
   rules:
     - always_declare_return_types

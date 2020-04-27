@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.0"
+  asn1lib:
+    dependency: transitive
+    description:
+      name: asn1lib
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.15"
   async:
     dependency: transitive
     description:
@@ -85,6 +92,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
+  encrypt:
+    dependency: "direct main"
+    description:
+      name: encrypt
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   file:
     dependency: transitive
     description:
@@ -99,8 +120,29 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.3.0"
-  firebase_core:
+  firebase_auth:
+    dependency: "direct main"
+    description:
+      name: firebase_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.0"
+  firebase_auth_platform_interface:
     dependency: transitive
+    description:
+      name: firebase_auth_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.7"
+  firebase_auth_web:
+    dependency: transitive
+    description:
+      name: firebase_auth_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
+  firebase_core:
+    dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
@@ -123,12 +165,10 @@ packages:
   firebase_database:
     dependency: "direct main"
     description:
-      path: "packages/firebase_database"
-      ref: "2d336caeb9ea65fcaaf83035e1653415f7017ae6"
-      resolved-ref: "2d336caeb9ea65fcaaf83035e1653415f7017ae6"
-      url: "https://github.com/jpeiffer/flutterfire"
-    source: git
-    version: "3.1.1"
+      name: firebase_database
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.3"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -148,6 +188,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  flutter_launcher_icons:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.5"
   flutter_map:
     dependency: "direct main"
     description:
@@ -155,6 +202,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.0"
+  flutter_qr_bar_scanner:
+    dependency: "direct main"
+    description:
+      name: flutter_qr_bar_scanner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  flutter_secure_storage:
+    dependency: "direct main"
+    description:
+      name: flutter_secure_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.3.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -165,6 +226,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  geolocator:
+    dependency: "direct main"
+    description:
+      name: geolocator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.1"
+  google_api_availability:
+    dependency: transitive
+    description:
+      name: google_api_availability
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.4"
   http:
     dependency: transitive
     description:
@@ -214,8 +289,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.6"
-  logging:
+  location_permissions:
     dependency: transitive
+    description:
+      name: location_permissions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
+  logging:
+    dependency: "direct main"
     description:
       name: logging
       url: "https://pub.dartlang.org"
@@ -242,6 +324,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  native_device_orientation:
+    dependency: transitive
+    description:
+      name: native_device_orientation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   nested:
     dependency: transitive
     description:
@@ -305,6 +394,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  pointycastle:
+    dependency: "direct main"
+    description:
+      name: pointycastle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   positioned_tap_detector:
     dependency: transitive
     description:
@@ -360,7 +456,7 @@ packages:
     source: hosted
     version: "1.7.0"
   sqflite:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sqflite
       url: "https://pub.dartlang.org"
@@ -478,6 +574,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.6.1"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
 sdks:
   dart: ">=2.7.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13+hotfix.6 <2.0.0"
