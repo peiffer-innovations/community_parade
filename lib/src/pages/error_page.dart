@@ -31,27 +31,41 @@ class ErrorPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(translationsBloc.translate(title)),
       ),
-      body: Column(
-        children: <Widget>[
-          Icon(
-            Icons.warning,
-            size: iconSize,
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 400.0),
+          padding: EdgeInsets.all(AppPadding.medium),
+          child: Material(
+            borderRadius: BorderRadius.circular(AppPadding.medium),
+            child: Padding(
+              padding: EdgeInsets.all(AppPadding.medium),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(
+                    Icons.warning,
+                    color: Colors.red,
+                    size: iconSize,
+                  ),
+                  SizedBox(
+                    height: AppPadding.medium,
+                  ),
+                  Text(
+                    translationsBloc.translate(message),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: AppPadding.medium,
+                  ),
+                  RaisedButton(
+                    onPressed: () => onButtonPressed(),
+                    child: Text(translationsBloc.translate(buttonLabel)),
+                  ),
+                ],
+              ),
+            ),
           ),
-          SizedBox(
-            height: AppPadding.medium,
-          ),
-          Text(
-            translationsBloc.translate(message),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: AppPadding.medium,
-          ),
-          RaisedButton(
-            onPressed: () => onButtonPressed(),
-            child: Text(translationsBloc.translate(buttonLabel)),
-          ),
-        ],
+        ),
       ),
     );
   }

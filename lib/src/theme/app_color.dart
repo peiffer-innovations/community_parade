@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColor {
+  static const divider = Color(0xffD8D8D8);
   static const primaryColor = Color(0xff1d3e88);
   static final primarySwatch = _Color.generateMaterialColor(primaryColor);
 }

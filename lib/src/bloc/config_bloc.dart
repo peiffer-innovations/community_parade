@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:community_parade/src/bloc/crypto_bloc.dart';
 import 'package:community_parade/src/bloc/rest_client_bloc.dart';
 import 'package:community_parade/src/config/api_config.dart';
 import 'package:community_parade/src/config/config_entry.dart';
@@ -25,7 +24,9 @@ class ConfigBloc {
 
   Stream<void> get valuesStream => _valuesController.stream;
 
-  Future<void> initialize() async {}
+  Future<void> initialize() async {
+    await _load();
+  }
 
   void dispose() {
     _valuesController?.close();
@@ -57,12 +58,14 @@ class ConfigBloc {
     return result;
   }
 
-  void setConfigValues(Map<String, Map<String, dynamic>> values) {
+  void setConfigValues(dynamic values) {
     for (var entry in values.entries) {
       var section = _values[entry.key];
       if (section == null) {
-        section = {};
+        section = <String, dynamic>{};
         _values[entry.key] = section;
+      } else {
+        section = Map<String, dynamic>.from(section);
       }
 
       section.addAll(entry.value);
@@ -88,6 +91,10 @@ class ConfigBloc {
     var response = await _restClientBloc.execute(
       request: request,
     );
+
+    if (response.statusCode == 200) {
+      setConfigValues(response.body);
+    }
   }
 
   Future<void> _load() async {

@@ -10,6 +10,7 @@ import 'package:community_parade/src/widgets/placeholder_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 
 class AppBootstrapWidget extends StatefulWidget {
   AppBootstrapWidget({
@@ -27,6 +28,8 @@ class AppBootstrapWidget extends StatefulWidget {
 }
 
 class _AppBootstrapWidgetState extends State<AppBootstrapWidget> {
+  static final Logger _logger = Logger('_AppBootstrapWidgetState');
+
   Bootstrapper _bootstrapper;
   bool _error = false;
   bool _initialized = false;
@@ -65,7 +68,8 @@ class _AppBootstrapWidgetState extends State<AppBootstrapWidget> {
       if (mounted == true) {
         setState(() {});
       }
-    } catch (e) {
+    } catch (e, stack) {
+      _logger.severe('Error during bootstrap', e, stack);
       _bootstrapper = _bootstrapper.reinitialize();
       _initialized = false;
       _error = true;

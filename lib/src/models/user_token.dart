@@ -2,30 +2,30 @@ import 'package:meta/meta.dart';
 import 'package:rest_client/rest_client.dart';
 
 @immutable
-class User extends Jsonable {
-  User({
+class UserToken extends Jsonable {
+  UserToken({
     this.firstName,
     this.lastName,
-    this.token,
+    this.signature,
     this.userId,
   })  : assert(firstName?.isNotEmpty == true),
         assert(lastName?.isNotEmpty == true),
-        assert(token?.isNotEmpty == true),
+        assert(signature?.isNotEmpty == true),
         assert(userId?.isNotEmpty == true);
 
   final String firstName;
   final String lastName;
-  final String token;
+  final String signature;
   final String userId;
 
-  static User fromDynamic(dynamic map) {
-    User result;
+  static UserToken fromDynamic(dynamic map) {
+    UserToken result;
 
     if (map != null) {
-      result = User(
+      result = UserToken(
         firstName: map['firstName'],
         lastName: map['lastName'],
-        token: map['token'],
+        signature: map['signature'],
         userId: map['userId'],
       );
     }
@@ -37,7 +37,7 @@ class User extends Jsonable {
   Map<String, dynamic> toJson() => {
         'firstName': firstName,
         'lastName': lastName,
-        'token': token,
+        'signature': signature,
         'userId': userId,
       };
 }

@@ -38,7 +38,7 @@ class TranslationsBloc {
 
     if (args?.isNotEmpty == true) {
       args.forEach((key, value) {
-        translated = translated.replaceAll('{$key}', value);
+        translated = translated.replaceAll('{$key}', '$value');
       });
     }
 

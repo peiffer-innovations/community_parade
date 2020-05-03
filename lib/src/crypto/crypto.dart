@@ -36,7 +36,7 @@ class Crypto {
         }
       }
     } catch (e, stack) {
-      FlutterError.onError(FlutterErrorDetails(
+      FlutterError.reportError(FlutterErrorDetails(
         exception: e,
         stack: stack,
       ));

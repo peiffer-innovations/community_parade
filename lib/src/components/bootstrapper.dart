@@ -4,7 +4,8 @@ import 'package:community_parade/src/bloc/firebase_bloc.dart';
 import 'package:community_parade/src/bloc/gps_bloc.dart';
 import 'package:community_parade/src/bloc/parade_bloc.dart';
 import 'package:community_parade/src/bloc/rest_client_bloc.dart';
-import 'package:community_parade/src/bloc/sql_database_bloc.dart';
+import 'package:community_parade/src/bloc/secure_store_bloc.dart';
+import 'package:community_parade/src/bloc/sembast_bloc.dart';
 import 'package:community_parade/src/bloc/translations_bloc.dart';
 import 'package:community_parade/src/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,8 @@ class Bootstrapper {
   GpsBloc _gpsBloc;
   ParadeBloc _paradeBloc;
   RestClientBloc _restClientBloc;
-  SqlDatabaseBloc _sqlDatabaseBloc;
+  SecureStoreBloc _secureStoreBloc;
+  SembastBloc _sembastBloc;
   TranslationsBloc _translationsBloc;
   UserBloc _userBloc;
 
@@ -34,7 +36,8 @@ class Bootstrapper {
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
   ParadeBloc get paradeBloc => _paradeBloc;
   RestClientBloc get restClientBloc => _restClientBloc;
-  SqlDatabaseBloc get sqlDatabaseBloc => _sqlDatabaseBloc;
+  SecureStoreBloc get secureStoreBloc => _secureStoreBloc;
+  SembastBloc get sembastBloc => _sembastBloc;
   TranslationsBloc get translationsBloc => _translationsBloc;
   UserBloc get userBloc => _userBloc;
 
@@ -42,8 +45,8 @@ class Bootstrapper {
     _cryptoBloc = CryptoBloc();
     await _cryptoBloc.initialize();
 
-    _userBloc = UserBloc();
-    await _userBloc.initialize();
+    _secureStoreBloc = SecureStoreBloc();
+    await _secureStoreBloc.initialize();
 
     var client = Client();
     _restClientBloc = RestClientBloc(
@@ -52,19 +55,26 @@ class Bootstrapper {
     );
     await _restClientBloc.initialize();
 
-    _sqlDatabaseBloc = SqlDatabaseBloc();
-    await _sqlDatabaseBloc;
-
-    _firebaseBloc = FirebaseBloc(
-      configBloc: configBloc,
-      userBloc: userBloc,
-    );
-    await _firebaseBloc.initialize();
+    _sembastBloc = SembastBloc();
+    await _sembastBloc;
 
     _configBloc = ConfigBloc(
       restClientBloc: _restClientBloc,
     );
-    await _configBloc;
+    await _configBloc.initialize();
+
+    _userBloc = UserBloc(
+      configBloc: _configBloc,
+      restClientBloc: _restClientBloc,
+      secureStoreBloc: _secureStoreBloc,
+    );
+    await _userBloc.initialize();
+
+    _firebaseBloc = FirebaseBloc(
+      configBloc: _configBloc,
+      userBloc: _userBloc,
+    );
+    await _firebaseBloc.initialize();
 
     _gpsBloc = GpsBloc();
     await _gpsBloc.initialize();
@@ -72,7 +82,9 @@ class Bootstrapper {
     _translationsBloc = TranslationsBloc();
     await _translationsBloc;
 
-    _paradeBloc = ParadeBloc();
+    _paradeBloc = ParadeBloc(
+      firebaseBloc: _firebaseBloc,
+    );
     await _paradeBloc;
   }
 
