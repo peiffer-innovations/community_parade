@@ -55,11 +55,13 @@ class FirebaseBloc implements FirebaseBlocInterface {
   Future<dynamic> once(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    String minKey,
+    OnError onError,
   }) =>
       _fb.once(
         children,
         keep: keep,
+        minKey: minKey,
         onError: onError,
       );
 }

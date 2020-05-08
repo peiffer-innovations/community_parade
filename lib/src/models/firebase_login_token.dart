@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:rest_client/rest_client.dart';
 
+@immutable
 class FirebaseLoginToken extends Jsonable {
   FirebaseLoginToken({
     @required this.expires,

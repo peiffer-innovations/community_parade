@@ -54,10 +54,9 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
   StreamSubscription<dynamic> listen(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    OnError onError,
     @required ValueSetter<dynamic> onValue,
   }) {
-    assert(onError != null);
     assert(onValue != null);
 
     var subscription = _ref(
@@ -121,16 +120,22 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
   Future<dynamic> once(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    String minKey,
+    OnError onError,
   }) async {
-    assert(onError != null);
-
     QueryEvent result;
     try {
-      result = await _ref(
+      dynamic ref = _ref(
         children,
         keep: keep,
-      ).once('value');
+      );
+
+      if (minKey?.isNotEmpty == true) {
+        ref = ref.orderByKey();
+        ref = ref.startAt(minKey);
+      }
+
+      result = await ref.once('value');
     } catch (e, stack) {
       if (onError != null) {
         await onError(

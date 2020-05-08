@@ -1,3 +1,4 @@
+import 'package:community_parade/src/bloc/community_bloc.dart';
 import 'package:community_parade/src/bloc/config_bloc.dart';
 import 'package:community_parade/src/bloc/crypto_bloc.dart';
 import 'package:community_parade/src/bloc/firebase_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:community_parade/src/bloc/sembast_bloc.dart';
 import 'package:community_parade/src/bloc/translations_bloc.dart';
 import 'package:community_parade/src/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rest_client/rest_client.dart';
 
 class Bootstrapper {
@@ -18,6 +20,7 @@ class Bootstrapper {
 
   final GlobalKey<NavigatorState> _navigatorKey;
 
+  CommunityBloc _communityBloc;
   ConfigBloc _configBloc;
   CryptoBloc _cryptoBloc;
   FirebaseBloc _firebaseBloc;
@@ -29,17 +32,43 @@ class Bootstrapper {
   TranslationsBloc _translationsBloc;
   UserBloc _userBloc;
 
-  ConfigBloc get configBloc => _configBloc;
-  CryptoBloc get cryptoBloc => _cryptoBloc;
-  FirebaseBloc get firebaseBloc => _firebaseBloc;
-  GpsBloc get gpsBloc => _gpsBloc;
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
-  ParadeBloc get paradeBloc => _paradeBloc;
-  RestClientBloc get restClientBloc => _restClientBloc;
-  SecureStoreBloc get secureStoreBloc => _secureStoreBloc;
-  SembastBloc get sembastBloc => _sembastBloc;
-  TranslationsBloc get translationsBloc => _translationsBloc;
-  UserBloc get userBloc => _userBloc;
+
+  List<Provider> get providers => [
+        Provider<CommunityBloc>.value(
+          value: _communityBloc,
+        ),
+        Provider<ConfigBloc>.value(
+          value: _configBloc,
+        ),
+        Provider<CryptoBloc>.value(
+          value: _cryptoBloc,
+        ),
+        Provider<FirebaseBloc>.value(
+          value: _firebaseBloc,
+        ),
+        Provider<GpsBloc>.value(
+          value: _gpsBloc,
+        ),
+        Provider<ParadeBloc>.value(
+          value: _paradeBloc,
+        ),
+        Provider<RestClientBloc>.value(
+          value: _restClientBloc,
+        ),
+        Provider<SecureStoreBloc>.value(
+          value: _secureStoreBloc,
+        ),
+        Provider<SembastBloc>.value(
+          value: _sembastBloc,
+        ),
+        Provider<TranslationsBloc>.value(
+          value: _translationsBloc,
+        ),
+        Provider<UserBloc>.value(
+          value: _userBloc,
+        ),
+      ];
 
   Future<void> bootstrap() async {
     _cryptoBloc = CryptoBloc();
@@ -76,6 +105,11 @@ class Bootstrapper {
     );
     await _firebaseBloc.initialize();
 
+    _communityBloc = CommunityBloc(
+      firebaseBloc: _firebaseBloc,
+    );
+    await _communityBloc.initialize();
+
     _gpsBloc = GpsBloc();
     await _gpsBloc.initialize();
 
@@ -84,6 +118,7 @@ class Bootstrapper {
 
     _paradeBloc = ParadeBloc(
       firebaseBloc: _firebaseBloc,
+      userBloc: _userBloc,
     );
     await _paradeBloc;
   }

@@ -58,7 +58,6 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
     @required OnError onError,
     @required ValueSetter<dynamic> onValue,
   }) {
-    assert(onError != null);
     assert(onValue != null);
 
     var subscription = _ref(
@@ -68,7 +67,7 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
       if (onError != null) {
         onError(
           error: error,
-          name: '_IoFirebaseApp.value',
+          name: '_IoFirebaseApp.listen: ${children.join('/')}',
         );
       } else {
         FlutterError.reportError(FlutterErrorDetails(
@@ -84,7 +83,7 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
           if (onError != null) {
             await onError(
               error: e,
-              name: '_IoFirebaseApp.value',
+              name: '_IoFirebaseApp.listen: ${children.join('/')}',
               stack: stack,
             );
           } else {
@@ -125,21 +124,27 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
   Future<dynamic> once(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    String minKey,
+    OnError onError,
   }) async {
-    assert(onError != null);
-
     DataSnapshot result;
     try {
-      result = await _ref(
+      dynamic ref = _ref(
         children,
         keep: keep,
-      ).once();
+      );
+
+      if (minKey?.isNotEmpty == true) {
+        ref = ref.orderByKey();
+        ref = ref.startAt(minKey);
+      }
+
+      result = await ref.once();
     } catch (e, stack) {
       if (onError != null) {
         await onError(
           error: e,
-          name: '_IoFirebaseApp.value',
+          name: '_IoFirebaseApp.value: ${children.join('/')}',
           stack: stack,
         );
       } else {
@@ -150,7 +155,7 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
       }
     }
 
-    return result.value;
+    return result?.value;
   }
 
   Future<void> _initialize() async {

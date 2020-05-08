@@ -11,7 +11,7 @@ abstract class FirebaseBlocInterface {
   StreamSubscription<dynamic> listen(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    OnError onError,
     @required ValueSetter<dynamic> onValue,
   });
 
@@ -21,6 +21,7 @@ abstract class FirebaseBlocInterface {
   Future<dynamic> once(
     List<String> children, {
     bool keep,
-    @required OnError onError,
+    String minKey,
+    OnError onError,
   });
 }

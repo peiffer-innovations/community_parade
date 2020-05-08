@@ -65,6 +65,11 @@ class _LoginPageState extends State<LoginPage> {
             password: _values['password'],
             username: _values['email'],
           );
+
+          await Navigator.of(context).pushNamedAndRemoveUntil(
+            NamedRoute.communities,
+            (route) => false,
+          );
         } catch (e, stack) {
           if (e is TranslationEntry) {
             await showDialog(
@@ -85,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 content: Text(
                   _translationsBloc.translate(e),
                 ),
+                contentPadding: EdgeInsets.all(AppPadding.medium),
                 title: Text(
                   _translationsBloc.translate(AppTranslations.error),
                 ),
@@ -136,6 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                 AppTranslations.error_message_form,
               ),
         ),
+        contentPadding: EdgeInsets.all(AppPadding.medium),
         title: Text(
           _translationsBloc.translate(AppTranslations.error),
         ),

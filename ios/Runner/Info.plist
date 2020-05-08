@@ -29,7 +29,7 @@
     <key>NSCameraUsageDescription</key>
     <string>Camera is used to scan community QR codes to join the community.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Location is needed to be able to update the position of the parade on the map.</string>
+    <string>Location is needed to be able to update the position of the parade on the map and find local communities.</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>

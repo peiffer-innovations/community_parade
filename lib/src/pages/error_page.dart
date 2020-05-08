@@ -37,6 +37,7 @@ class ErrorPage extends StatelessWidget {
           padding: EdgeInsets.all(AppPadding.medium),
           child: Material(
             borderRadius: BorderRadius.circular(AppPadding.medium),
+            elevation: 2.0,
             child: Padding(
               padding: EdgeInsets.all(AppPadding.medium),
               child: Column(

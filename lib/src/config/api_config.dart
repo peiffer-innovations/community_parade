@@ -25,7 +25,7 @@ class ApiConfig<T> extends ConfigEntry<T> {
 
   static const config = ApiConfig<String>._(
     key: 'config',
-    value: 'http://localhost:8080/api/config',
+    value: 'https://community-parade-1.appspot.com/api/config',
   );
 
   static const createAccount = ApiConfig<String>._(

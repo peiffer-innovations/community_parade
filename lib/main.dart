@@ -19,14 +19,14 @@ void main() {
   });
   var bootstrapper = Bootstrapper();
 
-  assert(() {
-    Client.proxy = Proxy(
-      ignoreBadCertificate: true,
-      url: 'localhost:8888',
-    );
+  // assert(() {
+  //   Client.proxy = Proxy(
+  //     ignoreBadCertificate: true,
+  //     url: '192.168.86.42:8888',
+  //   );
 
-    return true;
-  }());
+  //   return true;
+  // }());
 
   runApp(AppBootstrapWidget(bootstrapper: bootstrapper));
 }

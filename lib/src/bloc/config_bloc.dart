@@ -92,7 +92,7 @@ class ConfigBloc {
       request: request,
     );
 
-    if (response.statusCode == 200) {
+    if (response?.statusCode == 200) {
       setConfigValues(response.body);
     }
   }

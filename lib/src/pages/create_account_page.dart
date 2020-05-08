@@ -73,7 +73,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           );
 
           await Navigator.of(context).pushNamedAndRemoveUntil(
-            NamedRoute.home,
+            NamedRoute.communities,
             (route) => false,
           );
         } catch (e, stack) {
@@ -96,6 +96,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 content: Text(
                   _translationsBloc.translate(e),
                 ),
+                contentPadding: EdgeInsets.all(AppPadding.medium),
                 title: Text(
                   _translationsBloc.translate(AppTranslations.error),
                 ),
@@ -145,6 +146,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           content ??
               _translationsBloc.translate(AppTranslations.error_message_form),
         ),
+        contentPadding: EdgeInsets.all(AppPadding.medium),
         title: Text(
           _translationsBloc.translate(AppTranslations.error),
         ),

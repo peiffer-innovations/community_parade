@@ -9,35 +9,33 @@ class Parade extends Jsonable {
   Parade({
     @required this.active,
     @required this.birthdays,
-    @required this.location,
+    @required this.id,
     @required this.participants,
     @required this.rallyPoint,
     @required this.startDateTime,
-  }) : assert(startDateTime != null);
+  })  : assert(id?.isNotEmpty == true),
+        assert(startDateTime != null);
 
   final bool active;
   final List<BirthdayPerson> birthdays;
-  final LatLng location;
+  final String id;
   final Map<String, ParadeParticipant> participants;
   final LatLng rallyPoint;
   final DateTime startDateTime;
 
-  static Parade fromDynamic(dynamic map) {
+  static Parade fromDynamic(
+    dynamic map, {
+    String id,
+  }) {
     Parade result;
 
     if (map != null) {
-      var location = map['location'];
       var rallyPoint = map['rallyPoint'];
 
       result = Parade(
         active: Jsonable.parseBool('active'),
         birthdays: BirthdayPerson.fromDynamicList(map['birthdays']),
-        location: rallyPoint?.isNotEmpty == true
-            ? LatLng(
-                Jsonable.parseDouble(location['latitude']),
-                Jsonable.parseDouble(location['longitude']),
-              )
-            : null,
+        id: id ?? map['id'],
         participants: ParadeParticipant.fromDynamicMap(map['participants']),
         rallyPoint: rallyPoint?.isNotEmpty == true
             ? LatLng(
@@ -56,12 +54,7 @@ class Parade extends Jsonable {
   Map<String, dynamic> toJson() => {
         'active': active,
         'birthdays': Jsonable.toJsonList(birthdays),
-        'location': location == null
-            ? null
-            : {
-                'latitude': location.latitude,
-                'longitude': location.longitude,
-              },
+        'id': id,
         'rallyPoint': rallyPoint == null
             ? null
             : {

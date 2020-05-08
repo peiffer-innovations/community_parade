@@ -34,7 +34,11 @@ class _InitializationPageState extends State<InitializationPage> {
     );
 
     if (userBloc.user != null) {
-      route = NamedRoute.home;
+      if (userBloc.communityId?.isNotEmpty == true) {
+        route = NamedRoute.community;
+      } else {
+        route = NamedRoute.communities;
+      }
     }
 
     SchedulerBinding.instance.addPostFrameCallback(
