@@ -111,7 +111,8 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
     if (fbResult?.isNotEmpty == true) {
       var ids = <String>[];
       fbResult.forEach((key, _) => ids.add(key));
-      _communities ??= {};
+      var communities = <String, Community>{};
+
       await Future.forEach(
         ids,
         (communityId) async {
@@ -119,11 +120,13 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
 
           if (community != null) {
             fbCommunities[communityId] = community;
-            _communities[communityId] = community;
+            communities[communityId] = community;
           }
         },
       );
 
+      _communities ??= {};
+      _communities.addAll(communities);
       _communityList = _communities.values.toList()..sort();
       if (mounted == true) {
         if (fbCommunities.length == 1) {
@@ -161,6 +164,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
             for (var community in communities) {
               _communities[community.id] = community;
             }
+            _communityList = _communities.values.toList()..sort();
 
             if (mounted == true) {
               setState(() {});
@@ -168,6 +172,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
           }
         } else {
           _communities ??= {};
+          _communityList = _communities.values.toList()..sort();
           if (mounted == true) {
             setState(() {});
           }
@@ -176,6 +181,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
     } catch (e, stack) {
       _logger.severe('Error loading nearby communities', e, stack);
       _communities ??= {};
+      _communityList = _communities.values.toList()..sort();
 
       if (mounted == true) {
         setState(() {});
@@ -326,9 +332,9 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       ),
       body: AnimatedSwitcher(
         duration: Duration(milliseconds: 300),
-        child: _communities == null
+        child: _communityList == null
             ? _buildLoading(context)
-            : _communities.isEmpty == true
+            : _communityList.isEmpty == true
                 ? _buildEmpty(context)
                 : _buildChildren(context),
       ),

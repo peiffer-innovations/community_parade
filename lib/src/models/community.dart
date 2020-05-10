@@ -6,6 +6,7 @@ import 'package:rest_client/rest_client.dart';
 @immutable
 class Community extends Jsonable {
   Community({
+    this.admins,
     @required this.bounds,
     @required this.id,
     @required this.location,
@@ -15,6 +16,7 @@ class Community extends Jsonable {
         assert(location?.isNotEmpty == true),
         assert(name?.isNotEmpty == true);
 
+  final Map<String, bool> admins;
   final LatLngBounds bounds;
   final String id;
   final String location;
@@ -35,8 +37,13 @@ class Community extends Jsonable {
         Jsonable.parseDouble(map['bounds']['southWest']['latitude']),
         Jsonable.parseDouble(map['bounds']['southWest']['longitude']),
       );
+      var admins = <String, bool>{};
+      map['admins']?.forEach(
+        (key, value) => admins[key] = Jsonable.parseBool(value),
+      );
 
       result = Community(
+        admins: admins,
         bounds: LatLngBounds(
           northEast,
           southWest,

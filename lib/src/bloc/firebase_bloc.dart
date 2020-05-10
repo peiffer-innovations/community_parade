@@ -35,8 +35,8 @@ class FirebaseBloc implements FirebaseBlocInterface {
   StreamSubscription<dynamic> listen(
     List<String> children, {
     bool keep,
-    @required OnError onError,
-    @required ValueSetter<dynamic> onValue,
+    OnError onError,
+    @required KeyValueCallback<dynamic> onValue,
   }) =>
       _fb.listen(
         children,
@@ -52,6 +52,20 @@ class FirebaseBloc implements FirebaseBlocInterface {
   Future<void> logout() => _fb.logout();
 
   @override
+  StreamSubscription<dynamic> onChildChanged(
+    List<String> children, {
+    bool keep,
+    OnError onError,
+    @required KeyValueCallback<dynamic> onValue,
+  }) =>
+      _fb.onChildChanged(
+        children,
+        keep: keep,
+        onError: onError,
+        onValue: onValue,
+      );
+
+  @override
   Future<dynamic> once(
     List<String> children, {
     bool keep,
@@ -63,5 +77,17 @@ class FirebaseBloc implements FirebaseBlocInterface {
         keep: keep,
         minKey: minKey,
         onError: onError,
+      );
+
+  @override
+  Future<void> set(
+    List<String> children, {
+    OnError onError,
+    dynamic value,
+  }) =>
+      _fb.set(
+        children,
+        onError: onError,
+        value: value,
       );
 }

@@ -3,33 +3,42 @@ import 'package:meta/meta.dart';
 import 'package:rest_client/rest_client.dart';
 
 @immutable
-class ParadeParticipant extends Jsonable {
-  ParadeParticipant({
+class ParadeGeoPoint extends Jsonable {
+  ParadeGeoPoint({
     @required this.latitude,
-    @required this.lead,
     @required this.longitude,
     @required this.userId,
   })  : assert(latitude != null),
-        assert(lead != null),
         assert(longitude != null),
-        assert(userId != null);
+        assert(userId?.isNotEmpty == true);
 
   final double latitude;
-  final bool lead;
   final double longitude;
   final String userId;
 
-  static ParadeParticipant fromDynamic(
+  static ParadeGeoPoint fromDynamic(
     dynamic map, {
     String userId,
   }) {
-    ParadeParticipant result;
+    ParadeGeoPoint result;
 
     if (map != null) {
-      result = ParadeParticipant(
-        latitude: Jsonable.parseDouble(map['latitude']),
-        lead: Jsonable.parseBool(map['lead']),
-        longitude: Jsonable.parseDouble(map['longitude']),
+      // This is odd but for some reason the Web version of Firebase will return
+      // the map as an object with direct latitude and longitude properties but
+      // the native interface will return the object as a proper map.  This
+      // mechanism abstracts this oddity from the rest of the app.
+      var latLng = <String, double>{};
+      try {
+        latLng['latitude'] = Jsonable.parseDouble(map?.latitude);
+        latLng['longitude'] = Jsonable.parseDouble(map?.longitude);
+      } catch (e) {
+        // no-op
+      }
+
+      result = ParadeGeoPoint(
+        latitude: latLng['latitude'] ?? Jsonable.parseDouble(map['latitude']),
+        longitude:
+            latLng['longitude'] ?? Jsonable.parseDouble(map['longitude']),
         userId: userId ?? map['userId'],
       );
     }
@@ -37,8 +46,8 @@ class ParadeParticipant extends Jsonable {
     return result;
   }
 
-  static Map<String, ParadeParticipant> fromDynamicMap(dynamic dMap) {
-    Map<String, ParadeParticipant> results;
+  static Map<String, ParadeGeoPoint> fromDynamicMap(dynamic dMap) {
+    Map<String, ParadeGeoPoint> results;
 
     if (dMap != null) {
       results = {};
@@ -55,7 +64,7 @@ class ParadeParticipant extends Jsonable {
   }
 
   static Map<String, dynamic> toDynamicMap(
-      Map<String, ParadeParticipant> participants) {
+      Map<String, ParadeGeoPoint> participants) {
     Map<String, dynamic> result;
 
     if (participants != null) {
@@ -67,12 +76,11 @@ class ParadeParticipant extends Jsonable {
     return result;
   }
 
-  LatLng toLatLng() => LatLng(latitude, longitude);
+  LatLng get latLng => LatLng(latitude, longitude);
 
   @override
   Map<String, dynamic> toJson() => {
         'latitude': latitude,
-        'lead': lead,
         'longitude': longitude,
         'userId': userId,
       };

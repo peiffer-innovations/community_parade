@@ -56,29 +56,33 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
     List<String> children, {
     bool keep,
     @required OnError onError,
-    @required ValueSetter<dynamic> onValue,
+    @required KeyValueCallback<dynamic> onValue,
   }) {
     assert(onValue != null);
 
     var subscription = _ref(
       children,
       keep: keep,
-    ).onValue.handleError((error) {
-      if (onError != null) {
-        onError(
-          error: error,
-          name: '_IoFirebaseApp.listen: ${children.join('/')}',
-        );
-      } else {
-        FlutterError.reportError(FlutterErrorDetails(
-          exception: error,
-        ));
-      }
-      ;
-    }).listen(
+    ).onValue.handleError(
+      (error) {
+        if (onError != null) {
+          onError(
+            error: error,
+            name: '_IoFirebaseApp.listen: ${children.join('/')}',
+          );
+        } else {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: error,
+          ));
+        }
+      },
+    ).listen(
       (event) async {
         try {
-          await onValue(event?.snapshot?.value);
+          await onValue(
+            key: event?.snapshot?.key,
+            value: event?.snapshot?.value,
+          );
         } catch (e, stack) {
           if (onError != null) {
             await onError(
@@ -121,6 +125,58 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
   Future<void> logout() async => await FirebaseAuth.instance.signOut();
 
   @override
+  StreamSubscription<dynamic> onChildChanged(
+    List<String> children, {
+    bool keep,
+    OnError onError,
+    @required KeyValueCallback<dynamic> onValue,
+  }) {
+    assert(onValue != null);
+
+    var subscription = _ref(
+      children,
+      keep: keep,
+    ).onChildChanged.handleError(
+      (error) {
+        if (onError != null) {
+          onError(
+            error: error,
+            name: '_IoFirebaseApp.listen: ${children.join('/')}',
+          );
+        } else {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: error,
+          ));
+        }
+      },
+    ).listen(
+      (event) async {
+        try {
+          await onValue(
+            key: event?.snapshot?.key,
+            value: event?.snapshot?.value,
+          );
+        } catch (e, stack) {
+          if (onError != null) {
+            await onError(
+              error: e,
+              name: '_IoFirebaseApp.listen: ${children.join('/')}',
+              stack: stack,
+            );
+          } else {
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: e,
+              stack: stack,
+            ));
+          }
+        }
+      },
+    );
+
+    return subscription;
+  }
+
+  @override
   Future<dynamic> once(
     List<String> children, {
     bool keep,
@@ -144,7 +200,7 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
       if (onError != null) {
         await onError(
           error: e,
-          name: '_IoFirebaseApp.value: ${children.join('/')}',
+          name: '_IoFirebaseApp.once: ${children.join('/')}',
           stack: stack,
         );
       } else {
@@ -156,6 +212,32 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
     }
 
     return result?.value;
+  }
+
+  @override
+  Future<void> set(
+    List<String> children, {
+    OnError onError,
+    dynamic value,
+  }) async {
+    try {
+      var ref = _ref(children);
+
+      await ref.set(value);
+    } catch (e, stack) {
+      if (onError != null) {
+        await onError(
+          error: e,
+          name: '_IoFirebaseApp.set: ${children.join('/')}',
+          stack: stack,
+        );
+      } else {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: e,
+          stack: stack,
+        ));
+      }
+    }
   }
 
   Future<void> _initialize() async {
@@ -192,6 +274,7 @@ class _IoFirebaseBloc implements FirebaseBlocInterface {
             FirebaseConfig.base_path,
           ),
         );
+
     children?.forEach((child) => reference = reference.child(child));
 
     if (keep != null) {

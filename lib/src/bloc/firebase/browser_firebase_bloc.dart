@@ -55,7 +55,7 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
     List<String> children, {
     bool keep,
     OnError onError,
-    @required ValueSetter<dynamic> onValue,
+    @required KeyValueCallback<dynamic> onValue,
   }) {
     assert(onValue != null);
 
@@ -77,7 +77,10 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
     }).listen(
       (event) async {
         try {
-          await onValue(event?.snapshot?.val());
+          await onValue(
+            key: event?.snapshot?.key,
+            value: event?.snapshot?.val(),
+          );
         } catch (e, stack) {
           if (onError != null) {
             await onError(
@@ -117,6 +120,55 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
   Future<void> logout() async => await _app?.auth()?.signOut();
 
   @override
+  StreamSubscription<dynamic> onChildChanged(
+    List<String> children, {
+    bool keep,
+    OnError onError,
+    @required KeyValueCallback<dynamic> onValue,
+  }) {
+    dynamic ref = _ref(
+      children,
+      keep: keep,
+    );
+
+    return ref.onChildChanged.handleError((error) {
+      if (onError != null) {
+        onError(
+          error: error,
+          name: '_BrowserFirebaseBloc.onChildChanged',
+        );
+      } else {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+        ));
+      }
+      ;
+    }).listen((event) {
+      (event) async {
+        try {
+          await onValue(
+            key: event?.snapshot?.key,
+            value: event?.snapshot?.val(),
+          );
+        } catch (e, stack) {
+          if (onError != null) {
+            await onError(
+              error: e,
+              name: '_BrowserFirebaseApp.onChildChanged: ${children.join('/')}',
+              stack: stack,
+            );
+          } else {
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: e,
+              stack: stack,
+            ));
+          }
+        }
+      };
+    });
+  }
+
+  @override
   Future<dynamic> once(
     List<String> children, {
     bool keep,
@@ -140,7 +192,7 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
       if (onError != null) {
         await onError(
           error: e,
-          name: '_BrowserFirebaseBloc.value',
+          name: '_BrowserFirebaseBloc.once',
           stack: stack,
         );
       } else {
@@ -152,6 +204,31 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
     }
 
     return result?.snapshot?.val();
+  }
+
+  @override
+  Future<void> set(
+    List<String> children, {
+    OnError onError,
+    dynamic value,
+  }) async {
+    try {
+      var ref = _ref(children);
+      await ref.set(value);
+    } catch (e, stack) {
+      if (onError != null) {
+        await onError(
+          error: e,
+          name: '_BrowserFirebaseApp.set: ${children.join('/')}',
+          stack: stack,
+        );
+      } else {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: e,
+          stack: stack,
+        ));
+      }
+    }
   }
 
   Future<void> _initialize() async {
@@ -198,6 +275,7 @@ class _BrowserFirebaseBloc implements FirebaseBlocInterface {
             FirebaseConfig.base_path,
           ),
         );
+
     children?.forEach((child) => reference = reference.child(child));
 
     return reference;

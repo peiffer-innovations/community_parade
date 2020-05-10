@@ -7,7 +7,9 @@ import 'package:community_parade/src/bloc/translations_bloc.dart';
 import 'package:community_parade/src/bloc/user_bloc.dart';
 import 'package:community_parade/src/models/community.dart';
 import 'package:community_parade/src/models/parade.dart';
+import 'package:community_parade/src/models/parade_geo_point.dart';
 import 'package:community_parade/src/theme/app_color.dart';
+import 'package:community_parade/src/theme/app_image_asset.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -19,7 +21,11 @@ import 'package:provider/provider.dart';
 class ParadeTab extends StatefulWidget {
   ParadeTab({
     Key key,
-  }) : super(key: key);
+    @required this.tracking,
+  })  : assert(tracking != null),
+        super(key: key);
+
+  final bool tracking;
 
   @override
   _ParadeTabState createState() => _ParadeTabState();
@@ -27,6 +33,9 @@ class ParadeTab extends StatefulWidget {
 
 class _ParadeTabState extends State<ParadeTab> {
   final MapController _mapController = MapController();
+  final Map<String, ParadeGeoPoint> _points = {};
+  final StreamController<ParadeGeoPoint> _pointsStreamController =
+      StreamController<ParadeGeoPoint>.broadcast();
   final List<StreamSubscription> _subscriptions = [];
 
   Community _community;
@@ -63,6 +72,16 @@ class _ParadeTabState extends State<ParadeTab> {
       throttle.values.listen(
         (position) {
           _currentPosition = position;
+          if (widget.tracking == true) {
+            _mapController.move(
+              LatLng(
+                position.latitude,
+                position.longitude,
+              ),
+              _mapController.zoom,
+            );
+          }
+          _paradeBloc.updatePosition(position);
           if (mounted == true) {
             setState(() {});
           }
@@ -80,7 +99,21 @@ class _ParadeTabState extends State<ParadeTab> {
       listen: false,
     );
 
-    _subscriptions.add(_paradeBloc.subscribe().listen((parade) {
+    _subscriptions.add(
+      _pointsStreamController.stream.listen(
+        (point) {
+          _points[point.userId] = point;
+          if (mounted == true) {
+            setState(() {});
+          }
+        },
+      ),
+    );
+    _subscriptions.add(_paradeBloc
+        .subscribe(
+      participantStreamController: _pointsStreamController,
+    )
+        .listen((parade) {
       _parade = parade;
       if (mounted == true) {
         setState(() {});
@@ -93,6 +126,7 @@ class _ParadeTabState extends State<ParadeTab> {
   @override
   void dispose() {
     _subscriptions.forEach((sub) => sub.cancel());
+    _pointsStreamController.close();
     super.dispose();
   }
 
@@ -194,6 +228,25 @@ class _ParadeTabState extends State<ParadeTab> {
       );
     }
 
+    for (var point in _points.values) {
+      markers.add(
+        Marker(
+          anchorPos: AnchorPos.align(AnchorAlign.center),
+          builder: (BuildContext context) => SizedBox(
+            height: 60.0,
+            width: 30.0,
+            child: Image.asset(
+              AppImageAsset.balloons[
+                  point.userId.hashCode % AppImageAsset.balloons.length],
+            ),
+          ),
+          height: 30.0,
+          point: point.latLng,
+          width: 60.0,
+        ),
+      );
+    }
+
     return markers;
   }
 
@@ -217,9 +270,9 @@ class _ParadeTabState extends State<ParadeTab> {
               MarkerLayerOptions(
                 markers: _buildMarkers(),
               ),
-              CircleLayerOptions(
-                circles: _buildCircleMarkers(),
-              )
+              // CircleLayerOptions(
+              //   circles: _buildCircleMarkers(),
+              // ),
             ],
             mapController: _mapController,
             options: MapOptions(
@@ -231,6 +284,7 @@ class _ParadeTabState extends State<ParadeTab> {
                           _community.bounds.southWest.longitude) /
                       2.0),
               interactive: true,
+              maxZoom: 18.0,
               zoom: 14.0,
             ),
           );

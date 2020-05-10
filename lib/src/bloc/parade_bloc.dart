@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:community_parade/src/bloc/firebase_bloc.dart';
 import 'package:community_parade/src/bloc/user_bloc.dart';
 import 'package:community_parade/src/models/parade.dart';
+import 'package:community_parade/src/models/parade_geo_point.dart';
 import 'package:intl/intl.dart';
+import 'package:location/location.dart';
 import 'package:meta/meta.dart';
 
 class ParadeBloc {
@@ -19,6 +21,7 @@ class ParadeBloc {
   final List<StreamSubscription> _subscriptions = [];
   final UserBloc _userBloc;
 
+  Parade _parade;
   String _paradeId;
   StreamController<Parade> _streamController =
       StreamController<Parade>.broadcast();
@@ -72,18 +75,14 @@ class ParadeBloc {
 
   void setParadeId(String paradeId) => _paradeId = paradeId;
 
-  Stream<Parade> subscribe() {
+  Stream<Parade> subscribe({
+    StreamController<ParadeGeoPoint> participantStreamController,
+  }) {
     assert(_paradeId != null);
 
     var communityId = _userBloc.communityId;
     var controller = StreamController<Parade>();
-    controller.onCancel = () {
-      if (controller.hasListener != true) {
-        controller.close();
-      }
-    };
-
-    _firebaseBloc.listen(
+    var paradeSubscription = _firebaseBloc.listen(
       [
         'data',
         'parades',
@@ -91,17 +90,79 @@ class ParadeBloc {
         _paradeId,
       ],
       onError: null,
-      onValue: (value) {
+      onValue: ({key, value}) async {
         var parade = Parade.fromDynamic(
           value,
           id: _paradeId,
         );
+        _parade = parade;
         if (parade != null) {
           controller.add(parade);
         }
       },
     );
 
+    controller.onCancel = () {
+      if (controller.hasListener != true) {
+        paradeSubscription?.cancel();
+        controller.close();
+      }
+    };
+
+    if (participantStreamController != null) {
+      var children = [
+        'data',
+        'parade_participants',
+        communityId,
+        _paradeId,
+      ];
+      _firebaseBloc.once(children).then((value) {
+        value?.forEach((key, value) {
+          var position = ParadeGeoPoint.fromDynamic(
+            value,
+            userId: key,
+          );
+          if (position != null) {
+            participantStreamController.add(position);
+          }
+        });
+      });
+
+      var participantSubscription =
+          _firebaseBloc.onChildChanged(children, onValue: ({key, value}) async {
+        var position = ParadeGeoPoint.fromDynamic(
+          value,
+          userId: key,
+        );
+        if (position != null) {
+          participantStreamController.add(position);
+        }
+      });
+      participantStreamController.onCancel = () {
+        participantSubscription?.cancel();
+      };
+    }
+
     return controller.stream;
+  }
+
+  Future<void> updatePosition(LocationData position) async {
+    if (_parade?.active == true) {
+      var communityId = _userBloc.communityId;
+      var userId = _userBloc.user.userId;
+      await _firebaseBloc.set(
+        [
+          'data',
+          'parade_participants',
+          communityId,
+          _paradeId,
+          userId,
+        ],
+        value: {
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+        },
+      );
+    }
   }
 }

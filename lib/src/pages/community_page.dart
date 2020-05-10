@@ -1,6 +1,7 @@
 import 'package:community_parade/src/bloc/community_bloc.dart';
 import 'package:community_parade/src/bloc/translations_bloc.dart';
 import 'package:community_parade/src/bloc/user_bloc.dart';
+import 'package:community_parade/src/models/community.dart';
 import 'package:community_parade/src/pages/community/community_info_tab.dart';
 import 'package:community_parade/src/pages/community/parades_tab.dart';
 import 'package:community_parade/src/translations/app_translations.dart';
@@ -15,6 +16,8 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage>
     with SingleTickerProviderStateMixin {
+  bool _admin = false;
+  Community _community;
   CommunityBloc _communityBloc;
   TabController _tabController;
   String _title;
@@ -24,11 +27,6 @@ class _CommunityPageState extends State<CommunityPage>
   @override
   void initState() {
     super.initState();
-
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-    );
 
     _communityBloc = Provider.of<CommunityBloc>(
       context,
@@ -52,8 +50,15 @@ class _CommunityPageState extends State<CommunityPage>
   }
 
   Future<void> _initialize() async {
-    _title = (await _communityBloc.getCommunity(_userBloc.communityId))?.name ??
-        'Community';
+    _community = await _communityBloc.getCommunity(_userBloc.communityId);
+    if (_community != null) {
+      _admin = _community.admins[_userBloc.user.userId] == true;
+    }
+    _tabController = TabController(
+      length: _admin == true ? 3 : 2,
+      vsync: this,
+    );
+    _title = _community?.name ?? 'Community';
 
     if (mounted == true) {
       setState(() {});
@@ -77,34 +82,52 @@ class _CommunityPageState extends State<CommunityPage>
       appBar: AppBar(
         title: Text(_title),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[
-          ParadesTab(),
-          CommunityInfoTab(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tabController.index,
-        onTap: (index) => setState(() => _tabController.index = index),
-        items: [
-          _buildBottomNavBarItem(
-            context: context,
-            label: _translationsBloc.translate(AppTranslations.tab_parades),
-            icon: Icon(
-              FlutterIcons.birthday_cake_faw,
+      body: _community == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : TabBarView(
+              controller: _tabController,
+              physics: NeverScrollableScrollPhysics(),
+              children: <Widget>[
+                ParadesTab(),
+                CommunityInfoTab(),
+                if (_admin == true) SizedBox(),
+              ],
             ),
-          ),
-          _buildBottomNavBarItem(
-            context: context,
-            label: _translationsBloc.translate(AppTranslations.tab_community),
-            icon: Icon(
-              Icons.group,
+      bottomNavigationBar: _community == null
+          ? null
+          : BottomNavigationBar(
+              currentIndex: _tabController.index,
+              onTap: (index) => setState(() => _tabController.index = index),
+              items: [
+                _buildBottomNavBarItem(
+                  context: context,
+                  label:
+                      _translationsBloc.translate(AppTranslations.tab_parades),
+                  icon: Icon(
+                    FlutterIcons.birthday_cake_faw,
+                  ),
+                ),
+                _buildBottomNavBarItem(
+                  context: context,
+                  label: _translationsBloc
+                      .translate(AppTranslations.tab_community),
+                  icon: Icon(
+                    Icons.group,
+                  ),
+                ),
+                if (_admin == true)
+                  _buildBottomNavBarItem(
+                    context: context,
+                    label:
+                        _translationsBloc.translate(AppTranslations.tab_admin),
+                    icon: Icon(
+                      FlutterIcons.users_cog_faw5s,
+                    ),
+                  ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

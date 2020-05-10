@@ -1,11 +1,9 @@
 import 'package:community_parade/src/bloc/gps_bloc.dart';
-import 'package:community_parade/src/bloc/parade_bloc.dart';
 import 'package:community_parade/src/bloc/translations_bloc.dart';
 import 'package:community_parade/src/pages/parade/map_tab.dart';
-import 'package:community_parade/src/theme/app_color.dart';
+import 'package:community_parade/src/pages/parade/stops_tab.dart';
 import 'package:community_parade/src/translations/app_translations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:websafe_platform/websafe_platform.dart';
@@ -22,8 +20,8 @@ class ParadePage extends StatefulWidget {
 class _ParadePageState extends State<ParadePage>
     with SingleTickerProviderStateMixin {
   GpsBloc _gpsBloc;
-  ParadeBloc _paradeBloc;
   TabController _tabController;
+  bool _tracking = false;
   TranslationsBloc _translationsBloc;
   WebsafePlatform _websafePlatform;
 
@@ -41,11 +39,6 @@ class _ParadePageState extends State<ParadePage>
       listen: false,
     );
     _gpsBloc.startListening();
-
-    _paradeBloc = Provider.of<ParadeBloc>(
-      context,
-      listen: false,
-    );
 
     _translationsBloc = TranslationsBloc.of(context);
 
@@ -90,8 +83,10 @@ class _ParadePageState extends State<ParadePage>
         controller: _tabController,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
-          ParadeTab(),
-          SizedBox(),
+          ParadeTab(
+            tracking: _tracking,
+          ),
+          StopsTab(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -116,8 +111,12 @@ class _ParadePageState extends State<ParadePage>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(FlutterIcons.car_multiple_mco),
+        backgroundColor: _tracking == true
+            ? Theme.of(context).disabledColor
+            : Theme.of(context).primaryColor,
+        elevation: _tracking == true ? 2 : 4,
+        onPressed: () => setState(() => _tracking = !_tracking),
+        child: Icon(Icons.location_searching),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:community_parade/src/bloc/parade_bloc.dart';
 import 'package:community_parade/src/bloc/translations_bloc.dart';
-import 'package:community_parade/src/bloc/user_bloc.dart';
 import 'package:community_parade/src/components/named_route.dart';
 import 'package:community_parade/src/models/parade.dart';
 import 'package:community_parade/src/theme/app_padding.dart';
@@ -8,7 +7,6 @@ import 'package:community_parade/src/translations/app_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class ParadesTab extends StatefulWidget {
   ParadesTab({
@@ -22,7 +20,6 @@ class _ParadesTabState extends State<ParadesTab> {
   ParadeBloc _paradeBloc;
   List<Parade> _parades;
   TranslationsBloc _translationsBloc;
-  UserBloc _userBloc;
 
   @override
   void initState() {
@@ -34,11 +31,6 @@ class _ParadesTabState extends State<ParadesTab> {
     );
 
     _translationsBloc = Provider.of<TranslationsBloc>(
-      context,
-      listen: false,
-    );
-
-    _userBloc = Provider.of<UserBloc>(
       context,
       listen: false,
     );
@@ -73,9 +65,6 @@ class _ParadesTabState extends State<ParadesTab> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                QrImage(
-                  data: _userBloc.communityId,
-                ),
                 Padding(
                   padding: EdgeInsets.all(AppPadding.medium),
                   child: Text(

@@ -12,16 +12,29 @@ abstract class FirebaseBlocInterface {
     List<String> children, {
     bool keep,
     OnError onError,
-    @required ValueSetter<dynamic> onValue,
+    @required KeyValueCallback<dynamic> onValue,
   });
 
   Future<String> login(String token);
   Future<void> logout();
+
+  StreamSubscription<dynamic> onChildChanged(
+    List<String> children, {
+    bool keep,
+    OnError onError,
+    @required KeyValueCallback<dynamic> onValue,
+  });
 
   Future<dynamic> once(
     List<String> children, {
     bool keep,
     String minKey,
     OnError onError,
+  });
+
+  Future<void> set(
+    List<String> children, {
+    OnError onError,
+    dynamic value,
   });
 }

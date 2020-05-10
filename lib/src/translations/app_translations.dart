@@ -178,6 +178,11 @@ class AppTranslations {
     value: 'Unable to add community.  Please check the id and try again.',
   );
 
+  static const tab_admin = TranslationEntry(
+    key: 'tab_admin',
+    value: 'Admin',
+  );
+
   static const tab_community = TranslationEntry(
     key: 'tab_parades',
     value: 'Community',
